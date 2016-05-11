@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Adaptive.ReactiveTrader.Common;
 using Adaptive.ReactiveTrader.Contract;
 using Common.Logging;
 
@@ -14,7 +15,7 @@ namespace Adaptive.ReactiveTrader.Server.Analytics
         private static readonly ILog Log = LogManager.GetLogger<AnalyticsEngine>();
         private readonly IDictionary<string, CurrencyPairTracker> _ccyPairTracker = new Dictionary<string, CurrencyPairTracker>();
         private readonly object _currentPositionLock = new object();
-        private readonly EventLoopScheduler _eventLoopScheduler = new EventLoopScheduler();
+        private readonly IScheduler _eventLoopScheduler = ConcurrencyService.CreateEventScheduler("AnalyticsEngine");
         private readonly IDictionary<string, SpotPriceDto> _priceCache = new Dictionary<string, SpotPriceDto>();
 
         private readonly BehaviorSubject<PositionUpdatesDto> _updates;
@@ -107,7 +108,7 @@ namespace Adaptive.ReactiveTrader.Server.Analytics
                 _currentPositionUpdatesDto = pud;
             }
 
-            Log.Info(pud.ToString());
+            //Log.Info(pud.ToString());
 
             _updates.OnNext(pud);
         }

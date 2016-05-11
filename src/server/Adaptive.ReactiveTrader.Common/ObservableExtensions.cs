@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Threading;
 
 namespace Adaptive.ReactiveTrader.Common
 {
@@ -19,6 +21,14 @@ namespace Adaptive.ReactiveTrader.Common
                     observer.OnCompleted
                     )
                 );
+        }
+    }
+
+    public static class ConcurrencyService
+    {
+        public static IScheduler CreateEventScheduler(string name, bool foreground = false)
+        {
+            return new EventLoopScheduler(a => new Thread(a) {Name = name, IsBackground = !foreground});
         }
     }
 }

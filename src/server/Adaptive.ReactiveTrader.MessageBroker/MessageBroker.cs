@@ -10,11 +10,6 @@ namespace Adaptive.ReactiveTrader.MessageBroker
     {
         private WampHost _router;
 
-        public void Dispose()
-        {
-            _router.Dispose();
-        }
-
         public void Start()
         {
             _router = new WampHost();
@@ -26,6 +21,11 @@ namespace Adaptive.ReactiveTrader.MessageBroker
 
             var realm = _router.RealmContainer.GetRealmByName("com.weareadaptive.reactivetrader");
             realm.HostMetaApiService();
+        }
+
+        public void Dispose()
+        {
+            _router?.Dispose();
         }
     }
 }

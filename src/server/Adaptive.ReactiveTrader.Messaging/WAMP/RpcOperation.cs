@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Adaptive.ReactiveTrader.Messaging.Abstraction;
 using Common.Logging;
@@ -15,8 +16,7 @@ namespace Adaptive.ReactiveTrader.Messaging.WAMP
     internal class RpcOperation : IWampRpcOperation
     {
         protected static readonly ILog Log = LogManager.GetLogger<RpcOperation>();
-        private readonly IScheduler _scheduler = TaskPoolScheduler.Default;
-
+        
         private readonly Func<IRequestContext, IMessage, Task> _serviceMethod;
 
         public RpcOperation(string name, Func<IRequestContext, IMessage, Task> serviceMethod)
@@ -28,38 +28,38 @@ namespace Adaptive.ReactiveTrader.Messaging.WAMP
         public string Procedure { get; }
 
         public void Invoke<TMessage>(IWampRawRpcOperationRouterCallback caller,
-                                     IWampFormatter<TMessage> formatter,
-                                     InvocationDetails details)
+            IWampFormatter<TMessage> formatter,
+            InvocationDetails details)
         {
             var dummyDetails = new Dictionary<string, object>();
 
             caller.Error(WampObjectFormatter.Value,
-                         dummyDetails,
-                         "wamp.error.runtime_error",
-                         new object[] {"Expected parameters"});
+                dummyDetails,
+                "wamp.error.runtime_error",
+                new object[] {"Expected parameters"});
         }
 
         public void Invoke<TMessage>(IWampRawRpcOperationRouterCallback caller,
-                                     IWampFormatter<TMessage> formatter,
-                                     InvocationDetails details,
-                                     TMessage[] arguments)
+            IWampFormatter<TMessage> formatter,
+            InvocationDetails details,
+            TMessage[] arguments)
         {
             InnerInvoke(_serviceMethod, caller, formatter, arguments);
         }
 
         public void Invoke<TMessage>(IWampRawRpcOperationRouterCallback caller,
-                                     IWampFormatter<TMessage> formatter,
-                                     InvocationDetails details,
-                                     TMessage[] arguments,
-                                     IDictionary<string, TMessage> argumentsKeywords)
+            IWampFormatter<TMessage> formatter,
+            InvocationDetails details,
+            TMessage[] arguments,
+            IDictionary<string, TMessage> argumentsKeywords)
         {
             InnerInvoke(_serviceMethod, caller, formatter, arguments);
         }
 
         private void InnerInvoke<T>(Func<IRequestContext, IMessage, Task> serviceMethod,
-                                    IWampRawRpcOperationRouterCallback caller,
-                                    IWampFormatter<T> formatter,
-                                    T[] arguments)
+            IWampRawRpcOperationRouterCallback caller,
+            IWampFormatter<T> formatter,
+            T[] arguments)
         {
             var dummyDetails = new YieldOptions();
 
@@ -82,8 +82,11 @@ namespace Adaptive.ReactiveTrader.Messaging.WAMP
 
                 caller.Result(WampObjectFormatter.Value, dummyDetails);
 
+                Log.Info("Thread " + Thread.CurrentThread.ManagedThreadId + " calling op...");
 
-                _scheduler.Schedule(() => serviceMethod(userContext, message).Wait());
+                serviceMethod(userContext, message);
+
+                Log.Info("Thread " + Thread.CurrentThread.ManagedThreadId + " called op.");
             }
             catch (Exception e)
             {

@@ -24,8 +24,7 @@ namespace Adaptive.ReactiveTrader.Messaging
         private readonly WampMetaApiServiceProxy _meta;
         private readonly IObservable<long> _sessionTeardowns;
         private readonly IObservable<long> _subscriptionTeardowns;
-
-
+        
         public Broker(IWampChannel channel)
         {
             _channel = channel;

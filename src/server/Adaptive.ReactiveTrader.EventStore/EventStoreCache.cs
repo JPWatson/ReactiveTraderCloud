@@ -26,7 +26,7 @@ namespace Adaptive.ReactiveTrader.EventStore
     public abstract class EventStoreCache<TKey, TCacheItem, TOutput> : IDisposable
     {
         private readonly IConnectableObservable<IConnected<IEventStoreConnection>> _connectionChanged;
-        private readonly IScheduler _eventLoopScheduler = new EventLoopScheduler();
+        private readonly IScheduler _eventLoopScheduler = ConcurrencyService.CreateEventScheduler("EventStore Cache");
         private readonly SerialDisposable _eventsConnection = new SerialDisposable();
         private readonly SerialDisposable _eventsSubscription = new SerialDisposable();
 

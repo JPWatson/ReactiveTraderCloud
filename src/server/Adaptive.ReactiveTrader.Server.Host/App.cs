@@ -1,4 +1,5 @@
 using System;
+using System.Reactive.Concurrency;
 using System.Threading;
 using Adaptive.ReactiveTrader.Common.Config;
 using Adaptive.ReactiveTrader.EventStore;
@@ -55,8 +56,7 @@ namespace Adaptive.ReactiveTrader.Server.Host
                 using (var connectionFactory = BrokerConnectionFactory.Create(config.Broker))
                 {
                     var brokerStream = connectionFactory.GetBrokerStream();
-
-
+                    
                     var esFactory = _factory as IServiceHostFactoryWithEventStore;
 
                     if (esFactory != null)
@@ -97,8 +97,7 @@ namespace Adaptive.ReactiveTrader.Server.Host
                 EventStoreConnectionFactory.Create(
                     EventStoreLocation.External,
                     configuration);
-
-
+            
             return eventStoreConnection;
         }
     }

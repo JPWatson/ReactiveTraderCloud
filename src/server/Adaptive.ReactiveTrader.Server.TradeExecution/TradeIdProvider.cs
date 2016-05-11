@@ -3,6 +3,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Adaptive.ReactiveTrader.Common;
 using Adaptive.ReactiveTrader.EventStore.Domain;
 using Adaptive.ReactiveTrader.Server.TradeExecution.Domain;
 using Common.Logging;
@@ -20,7 +21,7 @@ namespace Adaptive.ReactiveTrader.Server.TradeExecution
         private const int Multiplier = 100;
         protected static readonly ILog Log = LogManager.GetLogger<TradeIdProvider>();
         private readonly IRepository _repository;
-        private readonly EventLoopScheduler _scheduler = new EventLoopScheduler();
+        private readonly IScheduler _scheduler = ConcurrencyService.CreateEventScheduler("TradeIdProvider");
         private int _hiValue;
         private bool _initialized;
 

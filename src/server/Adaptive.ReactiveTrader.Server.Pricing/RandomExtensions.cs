@@ -9,6 +9,7 @@ namespace Adaptive.ReactiveTrader.Server.Pricing
             var r1 = random.NextDouble();
             while (r1 < double.Epsilon)
             {
+                Console.WriteLine("Hit random 0");
                 r1 = random.NextDouble();
             }
 

@@ -11,6 +11,8 @@ namespace Adaptive.ReactiveTrader.MessageBroker
                 Console.WriteLine("Press any key...");
                 Console.ReadLine();
             }
+
+            Console.ReadLine();
         }
     }
 }
